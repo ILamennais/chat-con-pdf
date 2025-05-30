@@ -1,5 +1,5 @@
 streamlit
 PyPDF2
-langchain
+langchain>=0.0.170
 openai
 faiss-cpu
