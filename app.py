@@ -1,8 +1,8 @@
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 import tempfile
@@ -19,21 +19,17 @@ if uploaded_file and openai_api_key:
         tmp_file.write(uploaded_file.read())
         tmp_path = tmp_file.name
 
-    # Leer PDF
     reader = PdfReader(tmp_path)
     raw_text = ""
     for page in reader.pages:
         raw_text += page.extract_text() or ""
 
-    # Dividir en fragmentos
     splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200)
     texts = splitter.split_text(raw_text)
 
-    # Embeddings y búsqueda semántica
     embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
-    vectorstore = FAISS.from_texts(texts, embeddings)
+    vectorstore = Chroma.from_texts(texts, embeddings)
 
-    # Chat
     query = st.text_input("❓ Escribe tu pregunta sobre el documento:")
     if query:
         docs = vectorstore.similarity_search(query)
