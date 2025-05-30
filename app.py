@@ -2,7 +2,7 @@ import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
+from langchain.vectorstores import FAISS
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 import tempfile
@@ -28,7 +28,7 @@ if uploaded_file and openai_api_key:
     texts = splitter.split_text(raw_text)
 
     embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
-    vectorstore = Chroma.from_texts(texts, embeddings)
+    vectorstore = FAISS.from_texts(texts, embeddings)
 
     query = st.text_input("❓ Escribe tu pregunta sobre el documento:")
     if query:
